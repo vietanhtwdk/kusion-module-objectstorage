@@ -1,12 +1,8 @@
 # The configuration items in perspective of platform engineers. 
 modules: 
-  kawesome: 
-    path: oci://ghcr.io/kusionstack/kawesome
+  objectstorage:
+    path: oci://ghcr.io/vietanhtwdk/objectstorage
     version: 0.2.0
-    configs: 
+    configs:
       default: 
-        service: 
-          labels: 
-            kusionstack.io/module-name: kawesome
-          annotations: 
-            kusionstack.io/module-version: 0.2.0
+        cloud: aws

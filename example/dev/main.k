@@ -2,24 +2,25 @@
 import kam.v1.app_configuration as ac
 import service
 import service.container as c
-import kawesome.v1.kawesome
+import objectstorage.v1.objectstorage
 
-kawesome: ac.AppConfiguration {
+objectstorage: ac.AppConfiguration {
     # Declare the workload configurations. 
     workload: service.Service {
         containers: {
-            kawesome: c.Container {
+            objectstorage: c.Container {
                 image: "hashicorp/http-echo"
                 env: {
-                    "ECHO_TEXT": "$(KUSION_KAWESOME_RANDOM_PASSWORD)"
+                    "ECHO_TEXT": "$(KUSION_AWS_S3_BUCKET_DOMAIN_NAME)",
+                    "ECHO_TEXT2": "$(KUSION_AWS_S3_BUCKET_REGIONAL_DOMAIN_NAME)"
                 }
             }
         }
         replicas: 1
     }
-    # Declare the kawesome module configurations. 
+    # Declare the objectstorage module configurations. 
     accessories: {
-        "kawesome": kawesome.Kawesome {
+        "objectstorage": objectstorage.ObjectStorage {
             type: "cloud"
             bucket: "anhtvwordpress"
         }
