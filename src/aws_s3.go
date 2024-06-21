@@ -21,7 +21,7 @@ var (
 
 var defaultAWSProviderCfg = module.ProviderConfig{
 	Source:  "hashicorp/aws",
-	Version: "5.0.1",
+	Version: "5.55.0",
 }
 
 type awsSecurityGroupTraffic struct {
@@ -52,39 +52,25 @@ func (objectStorage *ObjectStorage) GenerateAWSResources(request *module.Generat
 		return nil, nil, ErrEmptyAWSProviderRegion
 	}
 
-	// Build random_password resource.
-	// randomPasswordRes, randomPasswordID, err := objectStorage.GenerateRandomPasswordResource(request)
-	// resources = append(resources, *randomPasswordRes)
-
-	// // Build aws_security_group resource.
-	// awsSecurityGroupRes, awsSecurityGroupID, err := objectStorage.generateAWSSecurityGroup(awsProviderCfg, region)
-	// if err != nil {
-	// 	return nil, nil, err
-	// }
-	// resources = append(resources, *awsSecurityGroupRes)
-
-	// Build aws_db_instance resource.
-	// awsDBInstance, awsDBInstanceID, err := objectStorage.generateAWSDBInstance(awsProviderCfg, region, randomPasswordID, awsSecurityGroupID)
-	// if err != nil {
-	// 	return nil, nil, err
-	// }
-	// resources = append(resources, *awsDBInstance)
-
-	// Build aws_db_instance resource.
-	// awsS3Bucket, awsS3BucketID, err := objectStorage.generateAWSS3Bucket(awsProviderCfg, region)
 	awsS3Bucket, awsS3BucketID, err := objectStorage.generateAWSS3Bucket(awsProviderCfg, region)
 	if err != nil {
 		return nil, nil, err
 	}
 	resources = append(resources, *awsS3Bucket)
 
-	hostAddress := modules.KusionPathDependency(awsS3BucketID, "address")
+	bucketDomainName := modules.KusionPathDependency(awsS3BucketID, "bucket_domain_name")
+	bucketRegionalDomainName := modules.KusionPathDependency(awsS3BucketID, "bucket_regional_domain_name")
+
 	// password := modules.KusionPathDependency(randomPasswordID, "result")
 
 	envVars := []v1.EnvVar{
 		{
-			Name:  "KUSION_AWS_S3_BUCKET_ADDRESS",
-			Value: modules.KusionPathDependency(hostAddress, "result"),
+			Name:  "KUSION_AWS_S3_BUCKET_DOMAIN_NAME",
+			Value: bucketDomainName,
+		},
+		{
+			Name:  "KUSION_AWS_S3_BUCKET_REGIONAL_DOMAIN_NAME",
+			Value: bucketRegionalDomainName,
 		},
 	}
 	patcher := &apiv1.Patcher{
@@ -107,14 +93,6 @@ func (objectStorage *ObjectStorage) GenerateAWSResources(request *module.Generat
 
 // generateAWSS3 generates aws_s3_bucket resource for the AWS provided ObjectStorage database instance.
 func (objectStorage *ObjectStorage) generateAWSS3Bucket(awsProviderCfg module.ProviderConfig, region string) (*apiv1.Resource, string, error) {
-	// SecurityIPs should be in the format of IP address or Classes Inter-Domain
-	// Routing (CIDR) mode.
-	// for _, ip := range objectStorage.SecurityIPs {
-	// 	if !IsIPAddress(ip) && !IsCIDR(ip) {
-	// 		return nil, "", fmt.Errorf("illegal security ip format: %s", ip)
-	// 	}
-	// }
-
 	resAttrs := map[string]interface{}{
 		"bucket": objectStorage.Bucket,
 	}

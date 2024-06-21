@@ -66,20 +66,6 @@ func (objectStorage *ObjectStorage) Generate(_ context.Context, request *module.
 	var resources []apiv1.Resource
 	var patcher *apiv1.Patcher
 
-	// // Generate the Kubernetes Service related resource.
-	// resource, err := objectStorage.GenerateServiceResource(request)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// resources = append(resources, *resource)
-
-	// // Generate the Terraform random_password related resource and patcher.
-	// resource, patcher, err = objectStorage.GenerateRandomPasswordResource(request)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// resources = append(resources, *resource)
-
 	// var providerType string
 	switch strings.ToLower(objectStorage.Type) {
 	// case "local":
